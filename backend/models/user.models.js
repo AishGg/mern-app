@@ -18,7 +18,41 @@ const userSchema = new mongoose.Schema({
     email:{
         type: String,
         required: true
+    },
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: []
+        }
+    ],
+    following: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: []
+        }
+    ],
+
+    profileImg:{
+        type: String,
+        default: ""
+    },
+    coverImg:{
+        type: String,
+        default: ""
+    },
+    bio: {
+        type: String,
+        default: ""
+    },
+    link: {
+        type: String,
+        default: ""
     }
+
+
+
 },{timestamps: true})
 
 const User = new mongoose.model("User", userSchema)
