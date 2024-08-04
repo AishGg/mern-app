@@ -18,7 +18,7 @@ export const followUnfollowuser = async (req, res)=>{
         const userToModify = await User.findById(id);
         const currentuser = await User.findById(req.user._id);
 
-        if(id== req.user._id){
+        if(id== req.user._id.toString()){
             return res.status(400).json({error: "you can't follow/unfollow yourself"})
         }
         if(!userToModify || !currentuser) return res.status(400).json({error: "user not found"});
