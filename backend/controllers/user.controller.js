@@ -1,5 +1,7 @@
+import bcrypt from 'bcryptjs';
 import User from '../models/user.models.js'
 import Notification from '../models/notification.model.js'
+import {v2 as cloudinary} from "cloudinary";
 
 export const getUserProfile = async (req, res)=>{
     const {username} = req.params;
@@ -87,10 +89,62 @@ export const getSuggestedProfile  = async (req, res) =>{
 }
 
 export const updateUser = async (req, res)=>{
+
+    const {fullname, email, username, currentPassword, newPassword, bio ,link} = req.body;
+    const {porfileImg, coverImg} = req.body;
+    const userId = req.user._id;
     try {
+        let user = await User.findById(userId);
+        if(!user) return res.status(404).josn({message: "user not found"})
         
+        if((!currentPassword && newPassword) || (!newPassword && currentPassword)) {
+            return res.status(400).json({error: "please provide both current and new password"})
+        }
+        if(currentPassword && newPassword){
+            const isMatch = await bcrypt.compare(currentPassword, user.password)
+            if(!isMatch) return res.status(400).json({error: "current passwor dis incorrect"});
+            if(newPassword.length < 6){
+                return res.status(400).json({error: "Password must be at least 6 characters"})
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(newPassword, salt)
+        }
+
+        if(porfileImg){
+            if(user.porfileImg){
+                await cloudinary.uploader.destroy(user.porfileImg.split("/").pop().split(".")[0]);
+
+            }
+            const uploadResponse = await cloudinary.uploader.upload(porfileImg)
+            porfileImg = uploadResponse.secure_url;
+
+        }
+
+        if(coverImg){
+            await cloudinary.uploader.destroy(user.coverImg.split("/").pop().split(".")[0]);
+            const uploadResponse = await cloudinary.uploader.upload(coverImg)
+            coverImg = uploadResponse.secure_url;
+        }
+
+        user.fullname = fullname || user.fullname;
+        user.email = email || user.email;
+        user.username = username || user.username;
+        user.email = email || user.email;
+        user.bio = bio || user.bio;
+        user.link = link || user.link;  
+        user.porfileImg = porfileImg  || user.porfileImg;
+        user.coverImg = coverImg || user.coverImg;
+
+        user = await user.save();
+
+        user.password = null;
+        
+        return res.status(200).json(user);
+
     } catch (error) {
-        
+        console.log("error in updateuser", error.message);
+        res.status(500).json({error: error.message})
     }
 }
 
