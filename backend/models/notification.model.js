@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema({
     from: {
-        type: mongoose.Schema.type.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
     to: {
-        type: mongoose.Schema.type.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
@@ -23,4 +23,5 @@ const notificationSchema = new mongoose.Schema({
 
 },{timestamps: true})
 
-export const Notification = mongoose.model('Notification',notificationSchema);
+const Notification = mongoose.model('Notification',notificationSchema);
+export default Notification;

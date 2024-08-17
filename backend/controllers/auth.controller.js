@@ -55,6 +55,7 @@ export const signup = async(req, res)=>{
       res.status(500).json({error: "Internal server error"})
    }
 }
+
 export const signin = async(req, res)=>{
     try {
       const {username, password} = req.body;
@@ -76,6 +77,7 @@ export const signin = async(req, res)=>{
          res.status(500).json({error: "Internal server error"});
     }
 }
+
 export const signout = async(req, res)=>{
    try{
       res.cookie("jwt", "",{maxAge: 0})
@@ -86,6 +88,7 @@ export const signout = async(req, res)=>{
       res.status(500).json({error: "Internal server error"});
  }
 }
+
 export const getMe = async(req, res)=>{
    try {
       const user = await User.findById(req.user._id).select("-password");
