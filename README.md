@@ -1,2 +1,2 @@
 # mern-app
-This is application is getting improved as the features needed
+A twitter clone using the react, node, express and mongoDb. 
